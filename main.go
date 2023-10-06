@@ -8,19 +8,11 @@ import (
 	"os"
 )
 
-type Data struct {
-	Header1 string
-	Header2 string
-	Header3 string
-	Header4 string
-	Header5 string
-}
-
-func main() {
+func CSVtoJSON() {
 	csvFile, _ := os.Open("file.csv")
 	reader := csv.NewReader(csvFile)
 
-	var data []Data
+	var data []map[string]string
 	headers, _ := reader.Read()
 
 	for {
@@ -31,27 +23,19 @@ func main() {
 			fmt.Println(error)
 		}
 
-		var d Data
-		fmt.Println(line)
+		m := make(map[string]string)
 		for i, value := range line {
-			switch headers[i] {
-			case "Header1":
-				d.Header1 = value
-			case "Header2":
-				d.Header2 = value
-			case "Header3":
-				d.Header3 = value
-			case "Header4":
-				d.Header4 = value
-			case "Header5":
-				d.Header5 = value
-			}
+			m[headers[i]] = value
 		}
-		data = append(data, d)
+		data = append(data, m)
 	}
 
 	jsonData, _ := json.Marshal(data)
 	jsonFile, _ := os.Create("file.json")
 	jsonFile.Write(jsonData)
 	jsonFile.Close()
+}
+
+func main() {
+	CSVtoJSON()
 }
